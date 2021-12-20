@@ -1,0 +1,7 @@
+{# Automatically include all schema files #}
+{% set schema_path = 'templates/schemas/' %}
+{% set file_list = query('ansible.builtin.fileglob', schema_path ~ '*') | map('split','/') | map('last') | reject('eq','main.yml.j2') %}
+{% for file in file_list | arista.avd.natural_sort %}
+{%     include schema_path ~ file %}
+
+{% endfor %}

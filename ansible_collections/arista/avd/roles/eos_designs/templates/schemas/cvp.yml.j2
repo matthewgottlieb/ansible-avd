@@ -1,0 +1,45 @@
+
+# CloudVision - Telemetry Agent (TerminAttr) configuration | Optional
+# You can either provide a list of IPs to target on-premise CloudVision cluster or
+# use DNS name for your CloudVision as a Service instance. If you have both on-prem and
+# CVaaS defined, only on-prem is going to be configured.
+
+cvp_instance_ip:
+  doc_file: management-settings.md
+  type: str
+  description: IPv4 address
+# or
+cvp_instance_ips:
+  doc_file: management-settings.md
+  type: list
+  elements: str
+  description: List of IPv4 Addresses or CV as a Service hostname
+
+cvp_ingestauth_key:
+  doc_file: management-settings.md
+  type: str
+  description: CloudVision Ingest Authentication key
+
+terminattr_ingestgrpcurl_port:
+  doc_file: management-settings.md
+  type: int
+  default: 9910
+  description: CloudVision Telemetry Port Number
+ 
+terminattr_smashexcludes:
+  doc_file: management-settings.md
+  type: str
+  description: "smash excludes"
+  default: "ale,flexCounter,hardware,kni,pulse,strata"
+
+terminattr_ingestexclude:
+  doc_file: management-settings.md
+  type: str
+  description: "ingest excludes"
+  default: "/Sysdb/cell/1/agent,/Sysdb/cell/2/agent >"
+
+terminattr_disable_aaa:
+  doc_file: management-settings.md
+  type: bool
+  description: "Bypass AAA on switch for commands sent via TerminAttr connection"
+  default: false

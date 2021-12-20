@@ -1,0 +1,29 @@
+mgmt_vrf_routing:
+  doc_file: management-settings.md
+  type: bool
+  description: Enable IP Routing on OOB Management VRF
+  default: false
+
+mgmt_interface:
+  doc_file: management-settings.md
+  type: str
+  description: OOB Management Interface
+  default: Management1
+
+mgmt_interface_vrf:
+  doc_file: management-settings.md
+  type: str
+  description: OOB Management VRF
+  default: MGMT
+
+mgmt_gateway:
+  doc_file: management-settings.md
+  description: OOB Management Default Gateway, IPv4 address
+  type: str
+  required: true
+
+mgmt_destination_networks:
+  doc_file: management-settings.md
+  type: list
+  elements: str
+  description: OOB mgmt interface destination networks - override default route. IPv4_network/Mask

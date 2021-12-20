@@ -1,0 +1,13 @@
+
+management_eapi:
+  description: Management eAPI. Default is https management eAPI enabled. The vrf is set to < mgmt_interface_vrf >
+
+  type: dict
+  options:
+    enable_http:
+      type: bool
+      default: false
+    enable_https:
+      type: bool
+      default: true
+  doc_file: management-settings.md

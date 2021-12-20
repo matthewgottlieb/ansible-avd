@@ -20,6 +20,7 @@ test_key:
   test_list_of_strings: 
     - <str, options: [option1 | option2]>
 ```
+
 <details>
 <summary>Example</summary>
 
@@ -27,13 +28,14 @@ test_key:
 test_key:
   test_bool: true
   test_list_of_dicts:
-  -   element_test_key: list item dict key string
+  - element_test_key: list item dict key string
   test_list_of_strings:
   - option1
   - option2
   test_string: some test string
 ```
 </details>
+
 <details>
 <summary>Schema</summary>
 
@@ -41,31 +43,32 @@ test_key:
 test_key:
   description: Some test to show the docs
   example:
-      test_bool: true
-      test_list_of_dicts:
-      -   element_test_key: list item dict key string
-      test_list_of_strings:
+    test_bool: true
+    test_list_of_dicts:
+    - element_test_key: list item dict key string
+    test_list_of_strings:
+    - option1
+    - option2
+    test_string: some test string
+  options:
+    test_bool:
+      required: true
+      type: bool
+    test_list_of_dicts:
+      elements: dict
+      options:
+        element_test_key:
+          type: str
+      type: list
+    test_list_of_strings:
+      choices:
       - option1
       - option2
-      test_string: some test string
-  options:
-      test_bool:
-          required: true
-          type: bool
-      test_list_of_dicts:
-          elements: dict
-          options:
-              element_test_key:
-                  type: str
-          type: list
-      test_list_of_strings:
-          choices:
-          - option1
-          - option2
-          elements: str
-          type: str
-      test_string:
-          type: str
+      elements: str
+      type: str
+    test_string:
+      type: str
   type: dict
 ```
+
 </details>

@@ -26,6 +26,8 @@
 {%     set line_indent = indentation - prefix | length %}
 {%     if indentation > 0 and key is arista.avd.defined %}
 {{ ('# ' ~ value.description | arista.avd.default(key) ~ required) | indent(indentation,first=true) }}
+{%     elif key is arista.avd.defined %}
+{{ '# ' ~ key ~ required }}
 {%     endif %}
 {{ (prefix ~ line) | indent(line_indent,first=true) }}
 {%     if value.type is arista.avd.defined('list') and value.elements is arista.avd.defined %}
@@ -55,10 +57,10 @@
 {%         endfor %}
 {%     endif %}
 {% endmacro %}
-# {{ ansible_role_name }}
+# {{ doc_file | split('.') | first | replace('_', ' ') | replace('-', ' ') | title }}
 
-## Data Model
-{% for key in schemas | arista.avd.default([]) %}
+## Variables and Options
+{% for key in schemas | arista.avd.default([]) if schemas[key].doc_file is arista.avd.defined(doc_file) %}
 
 ### {{ key }}
 {%     if schemas[key].description is arista.avd.defined %}
@@ -78,6 +80,7 @@
 {{ key }}:
   {{ schemas[key].example | to_nice_yaml(indent=2) | indent(2) -}}
 ```
+
 </details>
 {%     endif %}
 

@@ -4,13 +4,11 @@
   gather_facts: false
   tasks:
 
-    # - name: Role eos_designs
-    #   import_role:
-    #     name: arista.avd.eos_designs
-    #     tasks_from: role_docs
-    #     rolespec_validate: false
-    #   vars:
-    #     dest: '{{ role_path }}/doc/role_documentation.md'
+    - name: Role eos_designs
+      import_role:
+        name: arista.avd.eos_designs
+        tasks_from: role_docs
+        rolespec_validate: false
 
     - name: Role eos_cli_config_gen
       import_role:

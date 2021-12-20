@@ -1,0 +1,13 @@
+
+snmp_settings:
+  doc_file: management-settings.md
+  type: dict
+  description: SNMP Settings
+  options:
+    contact:
+      type: str
+      description: contact_info
+    location:
+      type: bool
+      default: false
+      description: SNMP Location, Formatted as <fabric_name> <dc_name> <pod_name> <switch_rack> <inventory_hostname>

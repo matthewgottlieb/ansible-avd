@@ -1,0 +1,43 @@
+event_handlers:
+  doc_file: management-settings.md
+  description: |
+    Gives ability to monitor and react to Syslog messages provides a powerful
+    and flexible tool that can be used to apply self-healing actions,
+    customize the system behavior, and implement workarounds to problems
+    discovered in the field.
+  type: list
+  elements: dict
+  options:
+    name:
+      type: str
+      required: true
+      description: Name of the event-handler
+    action_type:
+      type: str
+      description: Action type ex. bash, increment
+      required: true
+    action:
+      type: str
+      description: Command to run when handler is triggered
+      required: true
+    delay:
+      type: int
+      description: Delay in sec between 2 triggers
+      required: true
+    trigger:
+      type: str
+      description: Trigger, ex. on-logging
+    regex:
+      type: str
+      description: String to trigger handler
+    asynchronous:
+      type: bool
+
+  example:
+    - name: evpn-blacklist-recovery
+      action_type: bash
+      action: FastCli -p 15 -c "clear bgp evpn host-flap"
+      delay: 300
+      trigger: on-logging
+      regex:  EVPN-3-BLACKLISTED_DUPLICATE_MAC
+      asynchronous: true

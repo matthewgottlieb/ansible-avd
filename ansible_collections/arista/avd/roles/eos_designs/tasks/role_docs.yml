@@ -1,0 +1,20 @@
+---
+- name: Generate Role Documentation
+  tags: [role_docs]
+  template:
+    src: "role_docs/role_docs.md.j2"
+    dest: "{{ role_path }}/doc/{{ item }}"
+    mode: 0664
+  delegate_to: localhost
+  vars:
+    doc_file: "{{ item }}"
+  with_items:
+    # - connected-endpoints.md
+    # - custom-structured-configuration.md
+    # - fabric-topology.md
+    # - fabric-variables.md
+    # - l3-edge.md
+    - management-settings.md
+    # - network-services.md
+    # - node-types.md
+    # - platform-settings.md

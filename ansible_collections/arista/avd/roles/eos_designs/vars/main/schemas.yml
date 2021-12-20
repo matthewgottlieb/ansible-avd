@@ -1,0 +1,1 @@
+schemas: "{{ lookup('template','templates/schemas/main.yml.j2') | from_yaml }}"

@@ -1,0 +1,30 @@
+local_users:
+  doc_file: management-settings.md
+  required: true
+  description: List of local users
+  type: list
+  elements: dict
+  options:
+    name:
+      type: str
+      description: Username
+      unique: true
+      required: true
+    privilege:
+      type: int
+      description: "(1-15) Initial privilege level with local EXEC authorization"
+    role:
+      type: str
+      description: Specify a role for the user
+    no_password:
+      type: bool
+      description: do not configure a password for given username. sha512_password MUST not be defined for this user.
+    sha512_password:
+      type: str
+      description: "SHA512 ENCRYPTED password"
+
+  example:
+    - name: admin
+      privilege: 15
+      role: network-admin
+      no_password: true
