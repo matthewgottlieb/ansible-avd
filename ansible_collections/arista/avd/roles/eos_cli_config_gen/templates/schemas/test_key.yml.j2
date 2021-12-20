@@ -1,0 +1,29 @@
+# This is just a test key to get started. Remove when we have enough data models in here.
+test_key:
+  type: 'dict'
+  options:
+    test_bool:
+      type: 'bool'
+      required: true
+    test_string:
+      type: 'str'
+    test_list_of_dicts:
+      type: 'list'
+      elements: 'dict'
+      options:
+        element_test_key:
+          type: str
+    test_list_of_strings:
+      type: 'list'
+      elements: 'str'
+      choices: ['option1', 'option2']
+
+  example:
+    test_bool: true
+    test_string: "some test string"
+    test_list_of_dicts:
+      - element_test_key: "list item dict key string"
+    test_list_of_strings:
+      - option1
+      - option2
+  description: Some test to show the docs
