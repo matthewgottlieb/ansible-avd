@@ -1,0 +1,58 @@
+{% macro print_doc_line(key, value, prefix='', indentation=0) %}
+{%     set required = ' | Optional' %}
+{%     set unique = '' %}
+{%     set choices = '' %}
+{%     set def = '' %}
+{%     set line = '' %}
+{%     if value.required is arista.avd.defined(true) %}
+{%         set required = ' | Required' %}
+{%     endif %}
+{%     if value.unique is arista.avd.defined(true) %}
+{%         set unique = ' (unique)' %}
+{%     endif %}
+{%     if value.choices | arista.avd.default([]) | length > 0 %}
+{%         set choices = ', options: [' ~ value.choices | join(' | ') ~ ']' %}
+{%     endif %}
+{%     if value.default is arista.avd.defined %}
+{%         set def = ', default: ' ~ value.default %}
+{%     endif %}
+{%     if key is arista.avd.defined %}
+{%         set line = line ~ key ~ ': ' %}
+{%     endif %}
+{%     if value.type | arista.avd.default('str') not in ['list', 'dict'] %}
+{%         set line = line ~ '<' ~ value.type ~ unique ~ choices ~ def ~ '>' %}
+{%     endif %}
+{%     set line_indent = indentation - prefix | length %}
+{%     if indentation > 0 and key is arista.avd.defined %}
+{{ ('# ' ~ value.description | arista.avd.default(key) ~ required) | indent(indentation,first=true) }}
+{%     elif key is arista.avd.defined %}
+{{ '# ' ~ key ~ required }}
+{%     endif %}
+{{ (prefix ~ line) | indent(line_indent,first=true) }}
+{%     if value.type is arista.avd.defined('list') and value.elements is arista.avd.defined %}
+{%         if value.elements == 'dict' and value.options is arista.avd.defined(var_type='dict') %}
+{#             print options with unique=true first #}
+{%             set unique_options = [] %}
+{%             for option in value.options if value.options[option].unique is arista.avd.defined(true) %}
+{%                 do unique_options.append(option) %}
+{%             endfor %}
+{%             set non_unique_options = value.options | reject('in', unique_options) | list %}
+{%             for option in unique_options + non_unique_options %}
+{%                 if loop.first %}
+{%                     set option_prefix = '- ' %}
+{%                 else %}
+{%                     set option_prefix = '' %}
+{%                 endif %}
+{{                 print_doc_line(option, value.options[option], prefix=option_prefix, indentation=(indentation + 4)) -}}
+{%             endfor %}
+{%         else %}
+{%             set list_item = value %}
+{%             do list_item.update({'type': value.elements}) %}
+{{             print_doc_line(none, list_item, prefix='- ', indentation=(indentation + 4)) -}}
+{%         endif %}
+{%     elif value.type is arista.avd.defined('dict') and value.options is arista.avd.defined(var_type='dict') %}
+{%         for option in value.options %}
+{{             print_doc_line(option, value.options[option], indentation=(indentation + 2)) -}}
+{%         endfor %}
+{%     endif %}
+{% endmacro %}

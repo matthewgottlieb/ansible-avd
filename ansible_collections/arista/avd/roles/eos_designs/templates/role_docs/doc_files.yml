@@ -1,0 +1,31 @@
+---
+# List of files to render as role docs and the keys covered by that doc
+- name: management-settings.md
+  doc_keys:
+    - local_users
+    - mgmt_vrf_routing
+    - mgmt_interface
+    - mgmt_interface_vrf
+    - mgmt_gateway
+    - mgmt_destination_networks
+    - management_eapi
+    - cvp_instance_ip
+    - cvp_instance_ips
+    - cvp_ingestauth_key
+    - terminattr_ingestgrpcurl_port
+    - terminattr_smashexcludes
+    - terminattr_ingestexclude
+    - terminattr_disable_aaa
+    - name_servers
+    - snmp_settings
+    - timezone
+    - event_handlers
+
+# - connected-endpoints.md
+# - custom-structured-configuration.md
+# - fabric-topology.md
+# - fabric-variables.md
+# - l3-edge.md
+# - network-services.md
+# - node-types.md
+# - platform-settings.md
