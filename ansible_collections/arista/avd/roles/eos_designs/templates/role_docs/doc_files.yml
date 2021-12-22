@@ -21,11 +21,28 @@
     - timezone
     - event_handlers
 
+- name: network-services.md
+  doc_intro: |-
+    - The network services variables provide an abstracted model to create L2 and L3 network services across the fabric.
+    - The network services are grouped by tenants. The definition of a tenant may vary between organizations.
+      - e.g. Tenants can be organizations or departments.
+    - The tenant shares a common vni range for mac vrf assignment.
+    - The filtering model allows for granular deployment of network service to the fabric leveraging the tenant name and tags applied to the service definition.
+      - This allows for the re-use of SVIs and VLANs across the fabric.
+
+  doc_keys:
+    - mlag_ibgp_peering_vrfs
+    - evpn_rd_type
+    - evpn_rt_type
+    - internal_vlan_order
+    - mac_address_table
+    - svi_profiles
+    - tenants
+
 # - connected-endpoints.md
 # - custom-structured-configuration.md
 # - fabric-topology.md
 # - fabric-variables.md
 # - l3-edge.md
-# - network-services.md
 # - node-types.md
 # - platform-settings.md

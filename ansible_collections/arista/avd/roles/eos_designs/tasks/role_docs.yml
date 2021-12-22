@@ -8,5 +8,6 @@
   delegate_to: localhost
   vars:
     doc_file: "{{ item.name }}"
-    doc_keys: "{{ item.doc_keys }}"
+    doc_keys: "{{ item.doc_keys | arista.avd.default([]) }}"
+    doc_intro: "{{ item.doc_intro | arista.avd.default }}"
   with_items: "{{ lookup('file', 'templates/role_docs/doc_files.yml') | from_yaml }}"

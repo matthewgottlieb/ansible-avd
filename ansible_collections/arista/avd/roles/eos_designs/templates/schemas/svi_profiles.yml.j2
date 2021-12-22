@@ -1,0 +1,55 @@
+svi_profiles:
+  description: |-
+    Optional profiles to apply on SVI interfaces
+
+    Each profile can support all or some of the following keys according to your own needs.
+
+    Keys are the same used under SVI.
+
+  type: list
+  elements: dict
+  options:
+    name:
+      type: str
+      unique: true
+      description: Profile name
+      required: true
+    mtu:
+      type: int
+    enabled:
+      type: bool
+    ip_virtual_router_addresses:
+      type: list
+      elements: string
+      description:
+      choices:
+        - < IPv4_address >
+        - < IPv4_address/Mask >
+    ip_address_virtual:
+      type: str
+      choices:
+        - < IPv4_address/Mask >
+    ip_address_virtual_secondaries:
+      type: list
+      elements: string
+      description:
+      choices:
+        - < IPv4_address/Mask >
+    igmp_snooping_enabled:
+      type: bool
+      description: Enable IGMP Snooping ("on" by default in EOS)
+    ip_helpers:
+      type: list
+      elements: dict
+      options:
+        name:
+          required: true
+          unique: true
+          type: str
+          description: DNS Name or IP address
+        source_interface:
+          type: str
+          description: Source interface name
+        source_vrf:
+          type: str
+          description: VRF to originate DHCP relay packets to DHCP server

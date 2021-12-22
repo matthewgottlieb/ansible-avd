@@ -1,0 +1,11 @@
+mlag_ibgp_peering_vrfs:
+  description: |-
+    On mlag leafs, an SVI interface is defined per vrf, to establish iBGP peering.
+    The SVI id will be derived from the base vlan defined: ` mlag_ibgp_peering_vrfs.base_vlan + vrf_vni - 1`.
+    The SVI ip address derived from `mlag_l3_peer_ipv4_pool` is re-used across all iBGP peerings.
+  type: dict
+  options:
+    base_vlan:
+      type: int
+      default: 3000
+      description: Base VLAN < 1-4000 >

@@ -1,8 +1,13 @@
 # {{ doc_file | split('.') | first | replace('_', ' ') | replace('-', ' ') | title }}
+{% if doc_intro is arista.avd.defined %}
+
+{{ doc_intro }}
+{% endif %}
 
 ## Variables and Options
 {% for key in doc_keys if key in schemas %}
 {%     set schema = schemas[key] %}
+
 ### {{ key }}
 {%     if schema.description is arista.avd.defined %}
 

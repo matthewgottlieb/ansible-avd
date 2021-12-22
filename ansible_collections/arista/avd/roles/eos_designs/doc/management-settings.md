@@ -1,6 +1,9 @@
 # Management Settings
 
+
+
 ## Variables and Options
+
 ### local_users
 
 List of local users
@@ -39,7 +42,6 @@ local_users:
 ```yaml
 local_users:
   description: List of local users
-  doc_file: management-settings.md
   elements: dict
   example:
   - name: admin
@@ -70,6 +72,7 @@ local_users:
 ```
 
 </details>
+
 ### mgmt_vrf_routing
 
 Enable IP Routing on OOB Management VRF
@@ -86,11 +89,11 @@ mgmt_vrf_routing: <bool, default: False>
 mgmt_vrf_routing:
   default: false
   description: Enable IP Routing on OOB Management VRF
-  doc_file: management-settings.md
   type: bool
 ```
 
 </details>
+
 ### mgmt_interface
 
 OOB Management Interface
@@ -107,11 +110,11 @@ mgmt_interface: <str, default: Management1>
 mgmt_interface:
   default: Management1
   description: OOB Management Interface
-  doc_file: management-settings.md
   type: str
 ```
 
 </details>
+
 ### mgmt_interface_vrf
 
 OOB Management VRF
@@ -128,11 +131,11 @@ mgmt_interface_vrf: <str, default: MGMT>
 mgmt_interface_vrf:
   default: MGMT
   description: OOB Management VRF
-  doc_file: management-settings.md
   type: str
 ```
 
 </details>
+
 ### mgmt_gateway
 
 OOB Management Default Gateway, IPv4 address
@@ -148,12 +151,12 @@ mgmt_gateway: <str>
 ```yaml
 mgmt_gateway:
   description: OOB Management Default Gateway, IPv4 address
-  doc_file: management-settings.md
   required: true
   type: str
 ```
 
 </details>
+
 ### mgmt_destination_networks
 
 OOB mgmt interface destination networks - override default route. IPv4_network/Mask
@@ -170,12 +173,12 @@ mgmt_destination_networks:
 ```yaml
 mgmt_destination_networks:
   description: OOB mgmt interface destination networks - override default route. IPv4_network/Mask
-  doc_file: management-settings.md
   elements: str
   type: str
 ```
 
 </details>
+
 ### management_eapi
 
 Management eAPI. Default is https management eAPI enabled. The vrf is set to < mgmt_interface_vrf >
@@ -196,7 +199,6 @@ management_eapi:
 management_eapi:
   description: Management eAPI. Default is https management eAPI enabled. The vrf is
     set to < mgmt_interface_vrf >
-  doc_file: management-settings.md
   options:
     enable_http:
       default: false
@@ -208,6 +210,7 @@ management_eapi:
 ```
 
 </details>
+
 ### cvp_instance_ip
 
 IPv4 address
@@ -223,11 +226,11 @@ cvp_instance_ip: <str>
 ```yaml
 cvp_instance_ip:
   description: IPv4 address
-  doc_file: management-settings.md
   type: str
 ```
 
 </details>
+
 ### cvp_instance_ips
 
 List of IPv4 Addresses or CV as a Service hostname
@@ -244,12 +247,12 @@ cvp_instance_ips:
 ```yaml
 cvp_instance_ips:
   description: List of IPv4 Addresses or CV as a Service hostname
-  doc_file: management-settings.md
   elements: str
   type: str
 ```
 
 </details>
+
 ### cvp_ingestauth_key
 
 CloudVision Ingest Authentication key
@@ -265,11 +268,11 @@ cvp_ingestauth_key: <str>
 ```yaml
 cvp_ingestauth_key:
   description: CloudVision Ingest Authentication key
-  doc_file: management-settings.md
   type: str
 ```
 
 </details>
+
 ### terminattr_ingestgrpcurl_port
 
 CloudVision Telemetry Port Number
@@ -286,11 +289,11 @@ terminattr_ingestgrpcurl_port: <int, default: 9910>
 terminattr_ingestgrpcurl_port:
   default: 9910
   description: CloudVision Telemetry Port Number
-  doc_file: management-settings.md
   type: int
 ```
 
 </details>
+
 ### terminattr_smashexcludes
 
 smash excludes
@@ -307,11 +310,11 @@ terminattr_smashexcludes: <str, default: ale,flexCounter,hardware,kni,pulse,stra
 terminattr_smashexcludes:
   default: ale,flexCounter,hardware,kni,pulse,strata
   description: smash excludes
-  doc_file: management-settings.md
   type: str
 ```
 
 </details>
+
 ### terminattr_ingestexclude
 
 ingest excludes
@@ -328,11 +331,11 @@ terminattr_ingestexclude: <str, default: /Sysdb/cell/1/agent,/Sysdb/cell/2/agent
 terminattr_ingestexclude:
   default: /Sysdb/cell/1/agent,/Sysdb/cell/2/agent >
   description: ingest excludes
-  doc_file: management-settings.md
   type: str
 ```
 
 </details>
+
 ### terminattr_disable_aaa
 
 Bypass AAA on switch for commands sent via TerminAttr connection
@@ -349,11 +352,11 @@ terminattr_disable_aaa: <bool, default: False>
 terminattr_disable_aaa:
   default: false
   description: Bypass AAA on switch for commands sent via TerminAttr connection
-  doc_file: management-settings.md
   type: bool
 ```
 
 </details>
+
 ### name_servers
 
 List of DNS servers, IPv4 address
@@ -370,12 +373,12 @@ name_servers:
 ```yaml
 name_servers:
   description: List of DNS servers, IPv4 address
-  doc_file: management-settings.md
   elements: str
   type: str
 ```
 
 </details>
+
 ### snmp_settings
 
 SNMP Settings
@@ -395,7 +398,6 @@ snmp_settings:
 ```yaml
 snmp_settings:
   description: SNMP Settings
-  doc_file: management-settings.md
   options:
     contact:
       description: contact_info
@@ -409,6 +411,7 @@ snmp_settings:
 ```
 
 </details>
+
 ### timezone
 
 Clock timezone
@@ -424,11 +427,11 @@ timezone: <str>
 ```yaml
 timezone:
   description: Clock timezone
-  doc_file: management-settings.md
   type: str
 ```
 
 </details>
+
 ### event_handlers
 
 Gives ability to monitor and react to Syslog messages provides a powerful
@@ -486,7 +489,6 @@ event_handlers:
     discovered in the field.
 
     '
-  doc_file: management-settings.md
   elements: dict
   example:
   - action: FastCli -p 15 -c "clear bgp evpn host-flap"

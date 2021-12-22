@@ -1,0 +1,22 @@
+internal_vlan_order:
+  description: Internal vlan allocation order and range
+  required: true
+  type: dict
+  options:
+    allocation:
+      type: str
+      choices:
+        - ascending
+        - descending
+      default: ascending
+    range:
+      type: dict
+      options:
+        beginning:
+          type: int
+          description: First VLAN ID
+          default: 1006
+        ending:
+          type: int
+          description: Last VLAN ID
+          default: 1199
