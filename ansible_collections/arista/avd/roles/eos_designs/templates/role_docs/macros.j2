@@ -23,10 +23,13 @@
 {%         set line = line ~ '<' ~ value.type ~ unique ~ choices ~ def ~ '>' %}
 {%     endif %}
 {%     set line_indent = indentation - prefix | length %}
-{%     if indentation > 0 and key is arista.avd.defined %}
-{{ ('# ' ~ value.description | arista.avd.default(key) ~ required) | indent(indentation,first=true) }}
-{%     elif key is arista.avd.defined %}
-{{ '# ' ~ key ~ required }}
+{%     if key is arista.avd.defined %}
+{%         for description_line in value.description | arista.avd.default(key) | split ('\n') %}
+{%             if loop.last %}
+{%                 set description_line = description_line ~ required %}
+{%             endif %}
+{{ ('# ' ~ description_line) | indent(indentation,first=true) }}
+{%         endfor %}
 {%     endif %}
 {{ (prefix ~ line) | indent(line_indent,first=true) }}
 {%     if value.type is arista.avd.defined('list') and value.elements is arista.avd.defined %}

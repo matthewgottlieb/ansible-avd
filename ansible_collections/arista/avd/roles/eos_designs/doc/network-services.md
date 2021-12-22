@@ -16,7 +16,9 @@ The SVI id will be derived from the base vlan defined: ` mlag_ibgp_peering_vrfs.
 The SVI ip address derived from `mlag_l3_peer_ipv4_pool` is re-used across all iBGP peerings.
 
 ```yaml
-# mlag_ibgp_peering_vrfs | Optional
+# On mlag leafs, an SVI interface is defined per vrf, to establish iBGP peering.
+# The SVI id will be derived from the base vlan defined: ` mlag_ibgp_peering_vrfs.base_vlan + vrf_vni - 1`.
+# The SVI ip address derived from `mlag_l3_peer_ipv4_pool` is re-used across all iBGP peerings. | Optional
 mlag_ibgp_peering_vrfs: 
   # Base VLAN < 1-4000 > | Optional
   base_vlan: <int, default: 3000>
@@ -60,7 +62,17 @@ For loopback or 32-bit ASN/number the VNI can only be a 16-bit number.
 For 16-bit ASN/number the VNI can be a 32-bit number.
 
 ```yaml
-# evpn_rd_type | Optional
+# Route Distinguisher (RD) for L2 / L3 services is set to <overlay_loopback>:<vni> per default.
+# 
+# By configuring evpn_rd_type the Administrator subfield (first part of RD) can be set to other values.
+# 
+# Note:
+# 
+# RD is a 48-bit value which is split into <16-bit>:<32-bit> or <32-bit>:<16-bit>.
+# 
+# For loopback or 32-bit ASN/number the VNI can only be a 16-bit number.
+# 
+# For 16-bit ASN/number the VNI can be a 32-bit number. | Optional
 evpn_rd_type: 
   # admin_subfield | Optional
   admin_subfield: <str, options: [overlay_loopback | vtep_loopback | bgp_as | < IPv4 Address > | <0-65535> | <0-4294967295>], default: overlay_loopback>
@@ -120,7 +132,17 @@ For 32-bit ASN/number the VNI can only be a 16-bit number.
 For 16-bit ASN/number the VNI can be a 32-bit number.
 
 ```yaml
-# evpn_rt_type | Optional
+# Route Target (RT) for L2 / L3 services is set to <vni>:<vni> per default
+# 
+# By configuring evpn_rt_type the Administrator subfield (first part of RT) can be set to other values.
+# 
+# Note:
+# 
+# RT is a 48-bit value which is split into <16-bit>:<32-bit> or <32-bit>:<16-bit>.
+# 
+# For 32-bit ASN/number the VNI can only be a 16-bit number.
+# 
+# For 16-bit ASN/number the VNI can be a 32-bit number. | Optional
 evpn_rt_type: 
   # admin_subfield | Optional
   admin_subfield: <str, options: [bgp_as | vni | <0-65535> | <0-4294967295>], default: vni>
@@ -167,7 +189,7 @@ evpn_rt_type:
 Internal vlan allocation order and range
 
 ```yaml
-# internal_vlan_order | Required
+# Internal vlan allocation order and range | Required
 internal_vlan_order: 
   # allocation | Optional
   allocation: <str, options: [ascending | descending], default: ascending>
@@ -216,7 +238,7 @@ internal_vlan_order:
 MAC address-table aging time. Use to change the EOS default of 300
 
 ```yaml
-# mac_address_table | Optional
+# MAC address-table aging time. Use to change the EOS default of 300 | Optional
 mac_address_table: 
   # Aging time in seconds | Optional
   aging_time: <int>
@@ -246,7 +268,11 @@ Each profile can support all or some of the following keys according to your own
 Keys are the same used under SVI.
 
 ```yaml
-# svi_profiles | Optional
+# Optional profiles to apply on SVI interfaces
+# 
+# Each profile can support all or some of the following keys according to your own needs.
+# 
+# Keys are the same used under SVI. | Optional
 svi_profiles: 
     # Profile name | Required
   - name: <str (unique)>
@@ -258,12 +284,12 @@ svi_profiles:
     enabled: <bool, default: False>
 
     # ip virtual-router address
-    note, also requires an IP address to be configured on the SVI where it is applied. | Optional
+    # note, also requires an IP address to be configured on the SVI where it is applied. | Optional
     ip_virtual_router_addresses: 
       - <string, options: [< IPv4_address > | < IPv4_address/Mask >]>
 
     # ip address virtual to configure VXLAN Anycast IP address
-    Conserves IP addresses in VXLAN deployments as it doesn't require unique IP addresses on each node. | Optional
+    # Conserves IP addresses in VXLAN deployments as it doesn't require unique IP addresses on each node. | Optional
     ip_address_virtual: <str, options: [< IPv4_address/Mask >]>
 
     # ip_address_virtual_secondaries | Optional
@@ -363,26 +389,26 @@ svi_profiles:
 List of tenants, to define network services; L3 VRFs and L2 VLANS.
 
 ```yaml
-# tenants | Optional
+# List of tenants, to define network services; L3 VRFs and L2 VLANS. | Optional
 tenants: 
     # Specify a tenant name.
-    Tenant provide a construct to group L3 VRFs and L2 VLANs.
-    Networks services can be filtered by tenant name. | Required
+    # Tenant provide a construct to group L3 VRFs and L2 VLANs.
+    # Networks services can be filtered by tenant name. | Required
   - name: <str (unique)>
 
     # VXLAN Network Identifier for MAC VRF
-    VXLAN VNI is derived from the base number with simple addition.
-    e.g. mac_vrf_vni_base = 10000, svi 100 = VNI 10100, svi 300 = VNI 10300. | Required
+    # VXLAN VNI is derived from the base number with simple addition.
+    # e.g. mac_vrf_vni_base = 10000, svi 100 = VNI 10100, svi 300 = VNI 10300. | Required
     mac_vrf_vni_base: <int, options: [< 10000-16770000 >]>
 
     # Base number for vlan_aware_bundle
-    The "Assigned Number" part of RD/RT is derived from vrf_vni + vlan_aware_bundle_number_base. | Optional
+    # The "Assigned Number" part of RD/RT is derived from vrf_vni + vlan_aware_bundle_number_base. | Optional
     vlan_aware_bundle_number_base: <int, default: 0>
 
     # MLAG IBGP peering per VRF
-    By default an IBGP peering is configured per VRF between MLAG peers on separate VLANs.
-    Setting enable_mlag_ibgp_peering_vrfs: false under tenant will change this default to prevent configuration of these peerings and VLANs for all VRFs in the tenant.
-    This setting can be overridden per VRF. | Optional
+    # By default an IBGP peering is configured per VRF between MLAG peers on separate VLANs.
+    # Setting enable_mlag_ibgp_peering_vrfs: false under tenant will change this default to prevent configuration of these peerings and VLANs for all VRFs in the tenant.
+    # This setting can be overridden per VRF. | Optional
     enable_mlag_ibgp_peering_vrfs: <bool, default: True>
 
     # Define L3 network services organized by vrf. | Optional
@@ -391,10 +417,10 @@ tenants:
       - name: <str (unique)>
 
         # VRF VNI - required if vrf_id is not set
-        The VRF VNI range is not limited, but it is recommended to keep vrf_vni <= 1024
-        It is necessary to keep [ vrf_vni + MLAG IBGP base_vlan ] < 4094 to support MLAG IBGP peering in VRF.
-        If vrf_vni > 1094 make sure to change mlag_ibgp_peering_vrfs: { base_vlan: < > } to a lower value (default 3000).
-        If vrf_vni > 10000 make sure to adjust mac_vrf_vni_base accordingly to avoid overlap. | Optional
+        # The VRF VNI range is not limited, but it is recommended to keep vrf_vni <= 1024
+        # It is necessary to keep [ vrf_vni + MLAG IBGP base_vlan ] < 4094 to support MLAG IBGP peering in VRF.
+        # If vrf_vni > 1094 make sure to change mlag_ibgp_peering_vrfs: { base_vlan: < > } to a lower value (default 3000).
+        # If vrf_vni > 10000 make sure to adjust mac_vrf_vni_base accordingly to avoid overlap. | Optional
         vrf_vni: <int, default: < vrf_id >>
 
         # IP Helpers for DHCP relay | Optional
@@ -409,26 +435,26 @@ tenants:
             source_vrf: <str>
 
         # MLAG IBGP peering per VRF
-        By default an IBGP peering is configured per VRF between MLAG peers on separate VLANs.
-        Setting enable_mlag_ibgp_peering_vrfs: false under vrf will change this default and/or override the tenant-wide setting | Optional
+        # By default an IBGP peering is configured per VRF between MLAG peers on separate VLANs.
+        # Setting enable_mlag_ibgp_peering_vrfs: false under vrf will change this default and/or override the tenant-wide setting | Optional
         enable_mlag_ibgp_peering_vrfs: <bool, default: True>
 
         # Manually define the VLAN used on the MLAG pair for the iBGP session.
-        By default this parameter is calculated using the following formula: <base_vlan> + <vrf_vni> - 1 | Optional
+        # By default this parameter is calculated using the following formula: <base_vlan> + <vrf_vni> - 1 | Optional
         mlag_ibgp_peering_vlan: <int, options: [< 1-4094 >]>
 
         # Enable VTEP Network diagnostics
-        This will create a loopback with virtual source-nat enable to perform diagnostics from the switch. | Optional
+        # This will create a loopback with virtual source-nat enable to perform diagnostics from the switch. | Optional
         vtep_diagnostic: 
           # Loopback interface number | Required
           loopback: <int, options: [< 2-2100 >]>
 
           # Loopback ip range, a unique ip is derived from this ranged and assigned
-          to each l3 leaf based on it's unique id. Loopback is not created unless either loopback_ip_range or loopback_ip_pools are set. | Optional
+          # to each l3 leaf based on it's unique id. Loopback is not created unless either loopback_ip_range or loopback_ip_pools are set. | Optional
           loopback_ip_range: <str, options: [< IPv4_address/Mask >]>
 
           # For inventories with multiple PODs a loopback range can be set per POD to avoid overlaps.
-          This only takes effect when loopback_ip_range is not defined. Loopback is not created unless either loopback_ip_range or loopback_ip_pools are set. | Optional
+          # This only takes effect when loopback_ip_range is not defined. Loopback is not created unless either loopback_ip_range or loopback_ip_pools are set. | Optional
           loopback_ip_pools: 
               # Name matching "pod_name" | Required
             - pod: <str>
@@ -437,13 +463,13 @@ tenants:
               ipv4_pool: <str, options: [< IPv4_address/Mask >]>
 
         # Dictionary of SVIs
-        This will create both the L3 SVI and L2 VLAN based on filters applied to l3leaf and l2leaf. | Required
+        # This will create both the L3 SVI and L2 VLAN based on filters applied to l3leaf and l2leaf. | Required
         svis: 
             # SVI interface id and VLAN id | Required
           - id: <int (unique), options: [< 1-4096 >]>
 
             # By default the vni will be derived from "mac_vrf_vni_base"
-            The vni_override allows us to override this value and statically define it. | Optional
+            # The vni_override allows us to override this value and statically define it. | Optional
             vni_override: <int, options: [< 1-16777215 >]>
 
             # Name of SVI profile to apply If variables are configured in profile AND SVI, SVI information will overwrite profile. | Optional
@@ -466,7 +492,7 @@ tenants:
             igmp_snooping_enabled: <bool>
 
             # ip address virtual to configure VXLAN Anycast IP address
-            Conserves IP addresses in VXLAN deployments as it doesn't require unique IP addresses on each node. | Optional
+            # Conserves IP addresses in VXLAN deployments as it doesn't require unique IP addresses on each node. | Optional
             ip_address_virtual: <str, options: [< IPv4_address/Mask >]>
 
             # ip_address_virtual_secondaries | Optional
@@ -474,7 +500,7 @@ tenants:
               - <string, options: [< IPv4_address/Mask >]>
 
             # ip virtual-router address
-            note, also requires an IP address to be configured on the SVI where it is applied. | Optional
+            # note, also requires an IP address to be configured on the SVI where it is applied. | Optional
             ip_virtual_router_addresses: 
               - <string, options: [< IPv4_address > | < IPv4_address/Mask >]>
 
@@ -504,7 +530,7 @@ tenants:
                 raw_eos_cli: <str>
 
                 # Custom structured config added under vlan_interfaces.<interface> for eos_cli_config_gen
-                Overrides the setting on SVI level. | Optional
+                # Overrides the setting on SVI level. | Optional
                 structured_config: <any>
 
             # Interface MTU | Optional
@@ -517,7 +543,7 @@ tenants:
             structured_config: <any>
 
         # List of L3 interfaces
-        This will create IP routed interface inside VRF. Length of interfaces, nodes and ip_addresses must match. | Optional
+        # This will create IP routed interface inside VRF. Length of interfaces, nodes and ip_addresses must match. | Optional
         l3_interfaces: 
             # Interface Name | Optional
           - interfaces: 
@@ -551,9 +577,9 @@ tenants:
               - <int>
 
         # This will create static routes inside the tenant VRF.
-        If nodes are not specified, all l3leafs that carry the VRF will also be applied the static routes.
-        If a node has a static route in the VRF, redistribute static will be automatically enabled in that VRF.
-        This automatic behavior can be overridden non-selectively with the redistribute_static knob for the VRF. | Optional
+        # If nodes are not specified, all l3leafs that carry the VRF will also be applied the static routes.
+        # If a node has a static route in the VRF, redistribute static will be automatically enabled in that VRF.
+        # This automatic behavior can be overridden non-selectively with the redistribute_static knob for the VRF. | Optional
         static_routes: 
             # destination_address_prefix | Required
           - destination_address_prefix: <str, options: [< IPv4_address/Mask >]>
@@ -674,7 +700,7 @@ tenants:
       - id: <int (unique), options: [< 1-4096 >]>
 
         # By default the vni will be derived from "mac_vrf_vni_base"
-        The vni_override allows us to override this value and statically define it. | Optional
+        # The vni_override allows us to override this value and statically define it. | Optional
         vni_override: <int, options: [< 1-16777215 >]>
 
         # Vlan name | Required

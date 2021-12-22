@@ -7,7 +7,7 @@
 List of local users
 
 ```yaml
-# local_users | Required
+# List of local users | Required
 local_users: 
     # Username | Required
   - name: <str (unique)>
@@ -80,7 +80,7 @@ local_users:
 Enable IP Routing on OOB Management VRF
 
 ```yaml
-# mgmt_vrf_routing | Optional
+# Enable IP Routing on OOB Management VRF | Optional
 mgmt_vrf_routing: <bool, default: False>
 ```
 
@@ -101,7 +101,7 @@ mgmt_vrf_routing:
 OOB Management Interface
 
 ```yaml
-# mgmt_interface | Optional
+# OOB Management Interface | Optional
 mgmt_interface: <str, default: Management1>
 ```
 
@@ -122,7 +122,7 @@ mgmt_interface:
 OOB Management VRF
 
 ```yaml
-# mgmt_interface_vrf | Optional
+# OOB Management VRF | Optional
 mgmt_interface_vrf: <str, default: MGMT>
 ```
 
@@ -143,7 +143,7 @@ mgmt_interface_vrf:
 OOB Management Default Gateway, IPv4 address
 
 ```yaml
-# mgmt_gateway | Required
+# OOB Management Default Gateway, IPv4 address | Required
 mgmt_gateway: <str>
 ```
 
@@ -164,7 +164,7 @@ mgmt_gateway:
 OOB mgmt interface destination networks - override default route. IPv4_network/Mask
 
 ```yaml
-# mgmt_destination_networks | Optional
+# OOB mgmt interface destination networks - override default route. IPv4_network/Mask | Optional
 mgmt_destination_networks: 
   - <str>
 ```
@@ -186,7 +186,7 @@ mgmt_destination_networks:
 Management eAPI. Default is https management eAPI enabled. The vrf is set to < mgmt_interface_vrf >
 
 ```yaml
-# management_eapi | Optional
+# Management eAPI. Default is https management eAPI enabled. The vrf is set to < mgmt_interface_vrf > | Optional
 management_eapi: 
   # enable_http | Optional
   enable_http: <bool, default: False>
@@ -219,7 +219,7 @@ management_eapi:
 IPv4 address
 
 ```yaml
-# cvp_instance_ip | Optional
+# IPv4 address | Optional
 cvp_instance_ip: <str>
 ```
 
@@ -239,7 +239,7 @@ cvp_instance_ip:
 List of IPv4 Addresses or CV as a Service hostname
 
 ```yaml
-# cvp_instance_ips | Optional
+# List of IPv4 Addresses or CV as a Service hostname | Optional
 cvp_instance_ips: 
   - <str>
 ```
@@ -261,7 +261,7 @@ cvp_instance_ips:
 CloudVision Ingest Authentication key
 
 ```yaml
-# cvp_ingestauth_key | Optional
+# CloudVision Ingest Authentication key | Optional
 cvp_ingestauth_key: <str>
 ```
 
@@ -281,7 +281,7 @@ cvp_ingestauth_key:
 CloudVision Telemetry Port Number
 
 ```yaml
-# terminattr_ingestgrpcurl_port | Optional
+# CloudVision Telemetry Port Number | Optional
 terminattr_ingestgrpcurl_port: <int, default: 9910>
 ```
 
@@ -302,7 +302,7 @@ terminattr_ingestgrpcurl_port:
 smash excludes
 
 ```yaml
-# terminattr_smashexcludes | Optional
+# smash excludes | Optional
 terminattr_smashexcludes: <str, default: ale,flexCounter,hardware,kni,pulse,strata>
 ```
 
@@ -323,7 +323,7 @@ terminattr_smashexcludes:
 ingest excludes
 
 ```yaml
-# terminattr_ingestexclude | Optional
+# ingest excludes | Optional
 terminattr_ingestexclude: <str, default: /Sysdb/cell/1/agent,/Sysdb/cell/2/agent >>
 ```
 
@@ -344,7 +344,7 @@ terminattr_ingestexclude:
 Bypass AAA on switch for commands sent via TerminAttr connection
 
 ```yaml
-# terminattr_disable_aaa | Optional
+# Bypass AAA on switch for commands sent via TerminAttr connection | Optional
 terminattr_disable_aaa: <bool, default: False>
 ```
 
@@ -365,7 +365,7 @@ terminattr_disable_aaa:
 List of DNS servers, IPv4 address
 
 ```yaml
-# name_servers | Optional
+# List of DNS servers, IPv4 address | Optional
 name_servers: 
   - <str>
 ```
@@ -387,7 +387,7 @@ name_servers:
 SNMP Settings
 
 ```yaml
-# snmp_settings | Optional
+# SNMP Settings | Optional
 snmp_settings: 
   # contact_info | Optional
   contact: <str>
@@ -421,7 +421,7 @@ snmp_settings:
 Clock timezone
 
 ```yaml
-# timezone | Optional
+# Clock timezone | Optional
 timezone: <str>
 ```
 
@@ -445,7 +445,11 @@ discovered in the field.
 
 
 ```yaml
-# event_handlers | Optional
+# Gives ability to monitor and react to Syslog messages provides a powerful
+# and flexible tool that can be used to apply self-healing actions,
+# customize the system behavior, and implement workarounds to problems
+# discovered in the field.
+#  | Optional
 event_handlers: 
     # Name of the event-handler | Required
   - name: <str>
