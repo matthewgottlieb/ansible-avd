@@ -1,5 +1,5 @@
 # {{ doc_file | split('.') | first | replace('_', ' ') | replace('-', ' ') | title }}
-{% if doc_intro is arista.avd.defined %}
+{% if doc_intro is arista.avd.defined and doc_intro | length > 0 %}
 
 {{ doc_intro }}
 {% endif %}

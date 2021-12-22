@@ -14,31 +14,46 @@ svi_profiles:
       unique: true
       description: Profile name
       required: true
+
     mtu:
+      description: Interface MTU
       type: int
+
     enabled:
+      description: Enable or disable SVI interface
       type: bool
+      default: false
+
     ip_virtual_router_addresses:
       type: list
       elements: string
-      description:
+      description: |-
+        ip virtual-router address
+        note, also requires an IP address to be configured on the SVI where it is applied.
       choices:
         - < IPv4_address >
         - < IPv4_address/Mask >
+
     ip_address_virtual:
       type: str
       choices:
         - < IPv4_address/Mask >
+      description: |-
+        ip address virtual to configure VXLAN Anycast IP address
+        Conserves IP addresses in VXLAN deployments as it doesn't require unique IP addresses on each node.
+
     ip_address_virtual_secondaries:
       type: list
       elements: string
-      description:
       choices:
         - < IPv4_address/Mask >
+
     igmp_snooping_enabled:
       type: bool
       description: Enable IGMP Snooping ("on" by default in EOS)
+
     ip_helpers:
+      description: IP Helpers for DHCP relay
       type: list
       elements: dict
       options:

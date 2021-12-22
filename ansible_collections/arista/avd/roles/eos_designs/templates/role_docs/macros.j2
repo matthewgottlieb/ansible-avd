@@ -41,6 +41,8 @@
 {%                 if loop.first %}
 {%                     set option_prefix = '- ' %}
 {%                 else %}
+{# Print empty line between keys #}
+
 {%                     set option_prefix = '' %}
 {%                 endif %}
 {{                 print_doc_line(option, value.options[option], prefix=option_prefix, indentation=(indentation + 4)) -}}
@@ -52,6 +54,10 @@
 {%         endif %}
 {%     elif value.type is arista.avd.defined('dict') and value.options is arista.avd.defined(var_type='dict') %}
 {%         for option in value.options %}
+{%             if not loop.first %}
+{# Print empty line between keys #}
+
+{%             endif %}
 {{             print_doc_line(option, value.options[option], indentation=(indentation + 2)) -}}
 {%         endfor %}
 {%     endif %}

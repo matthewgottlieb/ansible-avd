@@ -1,4 +1,3 @@
-
 tenants:
   description: List of tenants, to define network services; L3 VRFs and L2 VLANS.
   type: list
@@ -13,7 +12,7 @@ tenants:
         Tenant provide a construct to group L3 VRFs and L2 VLANs.
         Networks services can be filtered by tenant name.
 
-    mac_vrf_vni_base: < 10000-16770000 >
+    mac_vrf_vni_base:
       type: int
       required: true
       choices:
@@ -23,7 +22,7 @@ tenants:
         VXLAN VNI is derived from the base number with simple addition.
         e.g. mac_vrf_vni_base = 10000, svi 100 = VNI 10100, svi 300 = VNI 10300.
 
-    vlan_aware_bundle_number_base: < number | default -> 0 >
+    vlan_aware_bundle_number_base:
       type: int
       default: 0
       description: |-
@@ -50,7 +49,7 @@ tenants:
           required: true
           unique: true
 
-        vrf_vni: < 1-1024 >
+        vrf_vni:
           type: int
           description: |-
             VRF VNI - required if vrf_id is not set
@@ -60,262 +59,472 @@ tenants:
             If vrf_vni > 10000 make sure to adjust mac_vrf_vni_base accordingly to avoid overlap.
           default: < vrf_id >
 
-        # IP Helper for DHCP relay
         ip_helpers:
-          < IPv4 dhcp server IP >:
-            source_interface: < interface-name >
-            source_vrf: < VRF to originate DHCP relay packets to DHCP server. If not set, uses current VRF >
+          description: IP Helpers for DHCP relay
+          type: list
+          elements: dict
+          options:
+            name:
+              required: true
+              unique: true
+              type: str
+              description: DNS Name or IP address
+            source_interface:
+              type: str
+              description: Source interface name
+            source_vrf:
+              type: str
+              description: VRF to originate DHCP relay packets to DHCP server
 
-        # MLAG IBGP peering per VRF | Optional
-        # By default an IBGP peering is configured per VRF between MLAG peers on separate VLANs.
-        # Setting enable_mlag_ibgp_peering_vrfs: false under vrf will change this default and/or override the tenant-wide setting
-        enable_mlag_ibgp_peering_vrfs: < true | false >
+        enable_mlag_ibgp_peering_vrfs:
+          type: bool
+          default: true
+          description: |-
+            MLAG IBGP peering per VRF
+            By default an IBGP peering is configured per VRF between MLAG peers on separate VLANs.
+            Setting enable_mlag_ibgp_peering_vrfs: false under vrf will change this default and/or override the tenant-wide setting
 
-        # Manually define the VLAN used on the MLAG pair for the iBGP session. | Optional
-        # By default this parameter is calculated using the following formula: <base_vlan> + <vrf_vni> - 1
-        mlag_ibgp_peering_vlan: <1-4096>
+        mlag_ibgp_peering_vlan:
+          type: int
+          description: |-
+            Manually define the VLAN used on the MLAG pair for the iBGP session.
+            By default this parameter is calculated using the following formula: <base_vlan> + <vrf_vni> - 1
+          choices:
+            - < 1-4094 >
 
-        # Enable VTEP Network diagnostics | Optional.
-        # This will create a loopback with virtual source-nat enable to perform diagnostics from the switch.
         vtep_diagnostic:
+          description: |-
+            Enable VTEP Network diagnostics
+            This will create a loopback with virtual source-nat enable to perform diagnostics from the switch.
+          type: dict
+          options:
+            loopback:
+              type: int
+              required: true
+              description: Loopback interface number
+              choices:
+                - < 2-2100 >
 
-          # Loopback interface number | Required (when vtep_diagnotics defined)
-          loopback: < 2-2100 >
+            loopback_ip_range:
+              type: str
+              description: |-
+                Loopback ip range, a unique ip is derived from this ranged and assigned
+                to each l3 leaf based on it's unique id. Loopback is not created unless either loopback_ip_range or loopback_ip_pools are set.
+              choices:
+                - < IPv4_address/Mask >
 
-          # Loopback ip range, a unique ip is derived from this ranged and assigned
-          # to each l3 leaf based on it's unique id. | Optional (loopback is not created unless loopback_ip_range or loopback_ip_pools are set)
-          loopback_ip_range: < IPv4_address/Mask >
+            loopback_ip_pools:
+              type: list
+              elements: dict
+              description: |-
+                For inventories with multiple PODs a loopback range can be set per POD to avoid overlaps.
+                This only takes effect when loopback_ip_range is not defined. Loopback is not created unless either loopback_ip_range or loopback_ip_pools are set.
+              options:
+                pod:
+                  type: str
+                  description: Name matching "pod_name"
+                  required: true
+                ipv4_pool: 
+                  type: str
+                  choices:
+                    - < IPv4_address/Mask >
+                  required: true
 
-          # For inventories with multiple PODs a loopback range can be set per POD to avoid overlaps.
-          # This only takes effect when loopback_ip_range is not defined. | Optional (loopback is not created unless loopback_ip_range or loopback_ip_pools are set)
-          loopback_ip_pools:
-            - pod: < pod_name >
-              ipv4_pool: < IPv4_address/Mask >
-
-        # Dictionary of SVIs | Required.
-        # This will create both the L3 SVI and L2 VLAN based on filters applied to l3leaf and l2leaf.
         svis:
+          description: |-
+            Dictionary of SVIs
+            This will create both the L3 SVI and L2 VLAN based on filters applied to l3leaf and l2leaf.
+          type: list
+          elements: dict
+          required: true
+          options:
+            id:
+              type: int
+              required: true
+              unique: true
+              description: SVI interface id and VLAN id
+              choices:
+                - < 1-4096 >
 
-          # SVI interface id and VLAN id. | Required
-          < 1-4096 >:
+            vni_override:
+              type: int
+              description: |-
+                By default the vni will be derived from "mac_vrf_vni_base"
+                The vni_override allows us to override this value and statically define it.
+              choices:
+               - < 1-16777215 >
 
-            # By default the vni will be derived from "mac_vrf_vni_base:"
-            # The vni_override allows us to override this value and statically define it. | Optional
-            vni_override: < 1-16777215 >
+            profile:
+              type: str
+              description:
+                Name of SVI profile to apply
+                If variables are configured in profile AND SVI, SVI information will overwrite profile.
 
-            # SVI profile to apply
-            # If variables are configured in profile AND SVI, SVI information will overwrite profile.
-            profile: < svi-profile-name >
+            name:
+              required: true
+              type: str
+              description: Vlan name
 
-            # vlan name | Required
-            name: < name >
+            description:
+              type: str
+              default: < vlan_name >
 
-            # SVI description. | Optional
-            description: < description | Default -> vlan name >
+            tags:
+              type: list
+              elements: str
+              required: true
+              description: Tags leveraged for networks services filtering.
 
-            # Tags leveraged for networks services filtering. | Required
-            tags: [ < tag_1 >, < tag_2 > ]
+            enabled:
+              description: Enable or disable SVI interface
+              type: bool
+              default: false
 
-            # Enable or disable interface
-            enabled: < true | false >
+            igmp_snooping_enabled:
+              type: bool
+              description: Enable IGMP Snooping ("on" by default in EOS)
 
-            # Enable IGMP Snooping
-            igmp_snooping_enabled: < true | false | default true (eos) >
+            ip_address_virtual:
+              type: str
+              choices:
+                - < IPv4_address/Mask >
+              description: |-
+                ip address virtual to configure VXLAN Anycast IP address
+                Conserves IP addresses in VXLAN deployments as it doesn't require unique IP addresses on each node.
 
-            # ip address virtual to configure VXLAN Anycast IP address
-            # Conserves IP addresses in VXLAN deployments as it doesn't require unique IP addresses on each node.
-            # Optional
-            ip_address_virtual: < IPv4_address/Mask >
             ip_address_virtual_secondaries:
-              - < IPv4_address/Mask >
-              - < IPv4_address/Mask >
+              type: list
+              elements: string
+              choices:
+                - < IPv4_address/Mask >
 
-            # ip virtual-router address
-            # note, also requires an IP address to be configured on the SVI where it is applied.
-            # Optional
             ip_virtual_router_addresses:
-              - < IPv4_address/Mask | IPv4_address >
-              - < IPv4_address/Mask | IPv4_address >
+              type: list
+              elements: string
+              description: |-
+                ip virtual-router address
+                note, also requires an IP address to be configured on the SVI where it is applied.
+              choices:
+                - < IPv4_address >
+                - < IPv4_address/Mask >
 
-            # IP Helper for DHCP relay
             ip_helpers:
-              < IPv4 dhcp server IP >:
-                source_interface: < interface-name >
-                source_vrf: < VRF to originate DHCP relay packets to DHCP server. If not set, uses current VRF >
+              description: IP Helpers for DHCP relay
+              type: list
+              elements: dict
+              options:
+                name:
+                  required: true
+                  unique: true
+                  type: str
+                  description: DNS Name or IP address
+                source_interface:
+                  type: str
+                  description: Source interface name
+                source_vrf:
+                  type: str
+                  description: VRF to originate DHCP relay packets to DHCP server.
 
-            # VXLAN | Optional - default true
-            # Extend this SVI over VXLAN
-            vxlan: < true | false | default -> true >
+            vxlan:
+              type: bool
+              default: true
+              description: Extend this SVI over VXLAN
 
-            # Define node specific configuration, such as unique IP addresses.
             nodes:
-              < l3_leaf_inventory_hostname_1 >:
-                # device unique IP address for node.
-                ip_address: < IPv4_address/Mask >
+              description: Define node specific configuration, such as unique IP addresses.
+              type: list
+              elements: dict
+              options:
+                name:
+                  description: Hostname of node
+                  type: str
+                  required: true
 
-                # EOS CLI rendered directly on the VLAN interface in the final EOS configuration
-                # Overrides the setting on SVI level.
-                raw_eos_cli: |
-                  < multiline eos cli >
+                ip_address:
+                  description: device unique IP address for node.
+                  type: str
+                  choices: < IPv4_address/Mask >
+                
+                raw_eos_cli:
+                  type: str
+                  description:
+                    EOS CLI rendered directly on the VLAN interface in the final EOS configuration
+                    Overrides the setting on SVI level. Supports Multiline strings
 
-                # Custom structured config added under vlan_interfaces.<interface> for eos_cli_config_gen
-                # Overrides the setting on SVI level.
-                structured_config: < dictionary >
+                structured_config:
+                  description: |-
+                    Custom structured config added under vlan_interfaces.<interface> for eos_cli_config_gen
+                    Overrides the setting on SVI level.
+                  type: any
 
-              < l3_leaf_inventory_hostname_2 >:
-                ip_address: < IPv4_address/Mask >
+            mtu:
+              description: Interface MTU
+              type: int
 
-            # Defined interface MTU
-            mtu: < mtu >
+            raw_eos_cli:
+              type: str
+              description:
+                EOS CLI rendered directly on the VLAN interface in the final EOS configuration
+                Supports Multiline strings
 
-            # EOS CLI rendered directly on the VLAN interface in the final EOS configuration
-            raw_eos_cli: |
-              < multiline eos cli >
+            structured_config:
+              description: Custom structured config added under vlan_interfaces.<interface> for eos_cli_config_gen
+              type: any
 
-            # Custom structured config added under vlan_interfaces.<interface> for eos_cli_config_gen
-            structured_config: < dictionary >
-
-        # List of L3 interfaces | Optional.
-        # This will create IP routed interface inside VRF. Length of interfaces, nodes and ip_addresses must match.
         l3_interfaces:
-          - interfaces: [ <interface_name1>, <interface_name2>, <interface_name3> ]
-            ip_addresses: [ <IPv4_address/Mask>, <IPv4_address/Mask>, <IPv4_address/Mask> ]
-            nodes: [ < node_1 >, < node_2 >, < node_1 > ]
-            description: < description >
-            enabled: < true | false >
-            mtu: < mtu >
-            # EOS CLI rendered directly on the Ethernet interface in the final EOS configuration
-            raw_eos_cli: |
-              < multiline eos cli >
-            # Custom structured config added under ethernet_interfaces.<interface> for eos_cli_config_gen
-            structured_config: < dictionary >
+          type: list
+          elements: dict
+          description: |-
+            List of L3 interfaces
+            This will create IP routed interface inside VRF. Length of interfaces, nodes and ip_addresses must match.
 
-          # For sub-interfaces the dot1q vlan is derived from the interface name by default, but can also be specified.
-          - interfaces: [ <interface_name1.sub-if-id>, <interface_name2.sub-if-id> ]
-            encapsulation_dot1q_vlan: [ <vlan id>, <vlan id> ]
-            ip_addresses: [ <IPv4_address/Mask>, <IPv4_address/Mask> ]
-            nodes: [ < node_1 >, < node_2 > ]
-            description: < description >
-            enabled: < true | false >
-            mtu: < mtu - should only be used for platforms supporting mtu per subinterface >
+          options:
+            interfaces:
+              type: list
+              elements: str
+              description: Interface Name
 
-        # Dictionary of static routes | Optional.
-        # This will create static routes inside the tenant VRF.
-        # If nodes are not specified, all l3leafs that carry the VRF will also be applied the static routes.
-        # If a node has a static route in the VRF, redistribute static will be automatically enabled in that VRF.
-        # This automatic behavior can be overridden non-selectively with the redistribute_static knob for the VRF.
+            ip_addresses:
+              type: list
+              elements: str
+              choices:
+                - <IPv4_address/Mask>
+
+            nodes:
+              type: list
+              elements: str
+              description: Hostname of Node
+
+            description:
+              description: Interface Description
+              type: str
+
+            enabled:
+              description: Enable or disable L3 interface
+              type: bool
+              default: false
+
+            mtu:
+              description: Interface MTU
+              type: int
+
+            raw_eos_cli:
+              type: str
+              description:
+                EOS CLI rendered directly on the Ethernet interface in the final EOS configuration
+                Supports Multiline strings
+
+            structured_config:
+              description: Custom structured config added under ethernet_interfaces.<interface> for eos_cli_config_gen
+              type: any
+
+            encapsulation_dot1q_vlan:
+              type: list
+              elements: int
+              description: For sub-interfaces the dot1q vlan is derived from the interface name by default, but can also be specified.
+
         static_routes:
-          - destination_address_prefix: < IPv4_address/Mask >
-            gateway: < IPv4_address >
-            distance: < 1-255 >
-            tag: < 0-4294967295 >
-            name: < description >
-            metric: < 0-4294967295 >
-            interface: < interface >
-            nodes: [ < node_1 >, < node_2 >]
+          type: list
+          elements: dict
+          description: |-
+            This will create static routes inside the tenant VRF.
+            If nodes are not specified, all l3leafs that carry the VRF will also be applied the static routes.
+            If a node has a static route in the VRF, redistribute static will be automatically enabled in that VRF.
+            This automatic behavior can be overridden non-selectively with the redistribute_static knob for the VRF.
+          options:
+            destination_address_prefix:
+              type: str
+              required: true
+              choices:
+                - < IPv4_address/Mask >
+            gateway:
+              type: str
+              choices:
+                - < IPv4_address >
+            distance:
+              type: int
+              choices:
+                - < 1-255 >
+            tag:
+              type: int
+              choices:
+                - < 0-4294967295 >
+            name:
+              type: str
+              description: Name/description for static route
+            metric:
+              type: int
+              choices:
+                - < 0-4294967295 >
+            interface:
+              type: str
+            nodes:
+              type: list
+              elements: str
+              description: Hostname of Node
 
-        # Non-selectively enabling or disabling redistribute static inside the VRF | Optional.
-        redistribute_static: < true | false >
+        redistribute_static:
+          type: bool
+          description: Non-selectively enabling or disabling redistribute static inside the VRF
 
-        # Dictionary of BGP peer definitions | Optional.
-        # This will configure BGP neighbors inside the tenant VRF for peering with external devices.
-        # The configured peer will automatically be activated for ipv4 or ipv6 address family based on the ip address.
-        # Note, only ipv4 and ipv6 address families are currently supported in eos_designs.
-        # For other address families, use custom_structured configuration with eos_cli_config_gen.
         bgp_peers:
-          < IPv4_address or IPv6_address >:
-            remote_as: < remote ASN >
-            description: < description >
-            password: < encrypted password >
-            send_community: < standard | extended | large | all >
-            next_hop_self: < true | false >
-            maximum_routes: < 0-4294967294 >
+          description:
+            This will configure BGP neighbors inside the tenant VRF for peering with external devices.
+            The configured peer will automatically be activated for ipv4 or ipv6 address family based on the ip address.
+            Note, only ipv4 and ipv6 address families are currently supported in eos_designs.
+            For other address families, use custom_structured configuration with eos_cli_config_gen.
+          type: list
+          elements: dict
+          options:
+            ip_address:
+              type: str
+              required: true
+              unique: true
+              choices:
+                - < IPv4_address >
+                - < IPv6_address >
+            remote_as:
+              type: int
+              description: Remote ASN
+            description:
+              type: str
+            password:
+              type: str
+              description: Encrypted password
+            send_community:
+              type: str
+              choices:
+                - standard
+                - extended
+                - large
+                - all
+            next_hop_self:
+              type: bool
+            maximum_routes:
+              type: int
             default_originate:
-              always: < true | false >
-            update_source: < interface >
-            ebgp_multihop: < 1-255 >
-            # Nodes is required to restrict configuration of BGP neighbors to certain nodes in the network.
-            nodes: [ < node_1 >, < node_2> ]
-            # Next hop settings can be either ipv4 or ipv6 for one neighbor, this will be applied by a uniquely generated route-map per neighbor.
-            # Next hop takes precedence over route_map_out.
-            set_ipv4_next_hop: < IPv4_address >
-            set_ipv6_next_hop: < IPv6_address >
-            route_map_out: < route-map name >
-            route_map_in: < route-map name >
-            local_as: < local BGP ASN >
-            weight: < 0-65535>
+              type: dict
+              options:
+                always:
+                  type: bool
+            update_source:
+              type: str
+              description: Interface name
+            ebgp_multihop:
+              type: int
+              choices:
+                - < 1-255 >
+            nodes:
+              type: list
+              description: Nodes are required to restrict configuration of BGP neighbors to certain nodes in the network.
+              elements: str
+            
+            set_ipv4_next_hop:
+              type: str
+              description:
+                Next hop settings can be either ipv4 or ipv6 for one neighbor, this will be applied by a uniquely generated route-map per neighbor.
+                Next hop takes precedence over route_map_out.
+              choices:
+               - < IPv4_address >
+            set_ipv6_next_hop:
+              type: str
+              description:
+                Next hop settings can be either ipv4 or ipv6 for one neighbor, this will be applied by a uniquely generated route-map per neighbor.
+                Next hop takes precedence over route_map_out.
+              choices:
+               - < IPv6_address >
+            route_map_out:
+              type: str
+              description: Route-map name
+            route_map_in:
+              type: st
+              description: Route-map name
+            local_as:
+              type: int
+            weight:
+              type: int
+              choices:
+                - < 0-65535>
 
         bgp:
-          # EOS CLI rendered directly on the Router BGP, VRF definition in the final EOS configuration
-          raw_eos_cli: |
-            < multiline eos cli >
-          # Custom structured config added under router_bgp.vrfs.<vrf> for eos_cli_config_gen
-          structured_config: < dictionary >
+          type: dict
+          options:
+            raw_eos_cli:
+              type: str
+              description:
+                EOS CLI rendered directly on the Router BGP, VRF definition in the final EOS configuration
+                Supports Multiline strings
 
-        # Optional configuration of extra route-targets for this VRF. Useful for route-leaking or gateway between address families.
+            structured_config:
+              description: Custom structured config added under router_bgp.vrfs.<vrf> for eos_cli_config_gen
+              type: any
+
         additional_route_targets:
-          - type: < import | export >
-            address_family: < address_family >
-            route_target: "< route_target >"
-            # Nodes is optional. Default is all nodes where the VRF is defined.
-            nodes: [ < node_1 >, < node_2> ]
+          type: list
+          elements: dict
+          description: Optional configuration of extra route-targets for this VRF. Useful for route-leaking or gateway between address families.
+          options:
+            type:
+              type: str
+              choices:
+                - import
+                - export
+            address_family:
+              type: str
+            route_target:
+              type: str
+            nodes:
+              description: Nodes key is optional. Default is all nodes where the VRF is defined.
+              type: list
+              elements: str
 
-        # EOS CLI rendered directly on the root level of the final EOS configuration
-        raw_eos_cli: |
-          < multiline eos cli >
-        # Custom structured config for eos_cli_config_gen
-        structured_config: < dictionary >
+        raw_eos_cli:
+          type: str
+          description:
+            EOS CLI rendered directly on the root level of the final EOS configuration
+            Supports Multiline strings
 
-      < tenant_a_vrf_2 >:
-        vrf_vni: < 1-1024 >
-        svis:
-          < 1-4096 >:
-            name: < description >
-            tags: [ < tag_1 >, < tag_2 > ]
-            enabled: < true | false >
-            ip_address_virtual: < IPv4_address/Mask >
+        structured_config:
+          description: Custom structured config for eos_cli_config_gen
+          type: any
 
-   # Define L2 network services organized by vlan id.
     l2vlans:
+      description: Define L2 network services organized by vlan id.
+      type: list
+      elements: dict
+      options:
+        id:
+          type: int
+          required: true
+          unique: true
+          description: VLAN id
+          choices:
+            - < 1-4096 >
 
-      # VLAN id.
-      < 1-4096 >:
-        # By default the vni will be derived from "mac_vrf_vni_base:"
-        # The vni_override, allows to override this value and statically define it.
-        vni_override: < 1-16777215 >
+        vni_override:
+          type: int
+          description: |-
+            By default the vni will be derived from "mac_vrf_vni_base"
+            The vni_override allows us to override this value and statically define it.
+          choices:
+            - < 1-16777215 >
 
-        # VLAN name.
-        name: < description >
+        name:
+          required: true
+          type: str
+          description: Vlan name
 
-        # Tags leveraged for networks services filtering.
-        tags: [ < tag_1 >, < tag_2 > ]
+        tags:
+          type: list
+          elements: str
+          required: true
+          description: Tags leveraged for networks services filtering.
 
-        # VXLAN | Optional - default true
-        # Extend this L2VLAN over VXLAN
-        vxlan: < true | false | default -> true >
+        vxlan:
+          type: bool
+          default: true
+          description: Extend this L2VLAN over VXLAN
 
-      < 1-4096 >:
-        name: < description >
-        tags: [ < tag_1 >, < tag_2 > ]
-        # Activate or deactivate IGMP snooping | Optional, default is true
-        igmp_snooping_enabled: < true | false >
-
-  < tenant_a >:
-    mac_vrf_vni_base: < 10000-16770000 >
-    vrfs:
-      < tenant_b_vrf_1 >:
-        vrf_vni: < 1-1024 >
-        vtep_diagnostic:
-          loopback: < 2-2100 >
-          loopback_ip_range: < IPv4_address/Mask >
-        svis:
-          < 1-4096 >:
-            name: < description >
-            tags: [ < tag_1 >, < tag_2 > ]
-            enabled: < true | false >
-            ip_address_virtual: < IPv4_address/Mask >
-    l2vlans:
-      < 1-4096 >:
-        vni_override: < 1-16777215 >
-        name: < description >
-        tags: [ < tag_1 >, < tag_2 > ]
+        igmp_snooping_enabled:
+          type: bool
+          description: Enable IGMP Snooping ("on" by default in EOS)

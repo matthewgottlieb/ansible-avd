@@ -1,7 +1,5 @@
 # Management Settings
 
-
-
 ## Variables and Options
 
 ### local_users
@@ -13,12 +11,16 @@ List of local users
 local_users: 
     # Username | Required
   - name: <str (unique)>
+
     # (1-15) Initial privilege level with local EXEC authorization | Optional
     privilege: <int>
+
     # Specify a role for the user | Optional
     role: <str>
+
     # do not configure a password for given username. sha512_password MUST not be defined for this user. | Optional
     no_password: <bool>
+
     # SHA512 ENCRYPTED password | Optional
     sha512_password: <str>
 ```
@@ -188,6 +190,7 @@ Management eAPI. Default is https management eAPI enabled. The vrf is set to < m
 management_eapi: 
   # enable_http | Optional
   enable_http: <bool, default: False>
+
   # enable_https | Optional
   enable_https: <bool, default: True>
 ```
@@ -388,6 +391,7 @@ SNMP Settings
 snmp_settings: 
   # contact_info | Optional
   contact: <str>
+
   # SNMP Location, Formatted as <fabric_name> <dc_name> <pod_name> <switch_rack> <inventory_hostname> | Optional
   location: <bool, default: False>
 ```
@@ -445,16 +449,22 @@ discovered in the field.
 event_handlers: 
     # Name of the event-handler | Required
   - name: <str>
+
     # Action type ex. bash, increment | Required
     action_type: <str>
+
     # Command to run when handler is triggered | Required
     action: <str>
+
     # Delay in sec between 2 triggers | Required
     delay: <int>
+
     # Trigger, ex. on-logging | Optional
     trigger: <str>
+
     # String to trigger handler | Optional
     regex: <str>
+
     # asynchronous | Optional
     asynchronous: <bool>
 ```
