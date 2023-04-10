@@ -185,8 +185,14 @@ interface {{ vlan_interface.name }}
 {%     if vlan_interface.pim.ipv4.sparse_mode is arista.avd.defined(true) %}
    pim ipv4 sparse-mode
 {%     endif %}
+{%     if vlan_interface.pim.ipv4.hello_interval is arista.avd.defined %}
+   pim ipv4 hello interval {{ vlan_interface.pim.ipv4.hello_interval }}
+{%     endif %}
 {%     if vlan_interface.pim.ipv4.dr_priority is arista.avd.defined %}
    pim ipv4 dr-priority {{ vlan_interface.pim.ipv4.dr_priority }}
+{%     endif %}
+{%     if vlan_interface.pim.ipv4.join_prune_interval is arista.avd.defined %}
+   pim ipv4 join-prune interval {{ vlan_interface.pim.ipv4.hello_interval }}
 {%     endif %}
 {%     if vlan_interface.pim.ipv4.local_interface is arista.avd.defined %}
    pim ipv4 local-interface {{ vlan_interface.pim.ipv4.local_interface }}

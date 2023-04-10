@@ -484,8 +484,14 @@ interface {{ ethernet_interface.name }}
 {%         if ethernet_interface.pim.ipv4.sparse_mode is arista.avd.defined(true) %}
    pim ipv4 sparse-mode
 {%         endif %}
+{%         if ethernet_interface.pim.ipv4.hello_interval is arista.avd.defined %}
+   pim ipv4 hello interval {{ ethernet_interface.pim.ipv4.hello_interval }}
+{%         endif %}
 {%         if ethernet_interface.pim.ipv4.dr_priority is arista.avd.defined %}
    pim ipv4 dr-priority {{ ethernet_interface.pim.ipv4.dr_priority }}
+{%         endif %}
+{%         if ethernet_interface.pim.ipv4.join_prune_interval is arista.avd.defined %}
+   pim ipv4 join-prune interval {{ ethernet_interface.pim.ipv4.join_prune_interval }}
 {%         endif %}
 {%         if ethernet_interface.qos.trust is arista.avd.defined %}
 {%             if ethernet_interface.qos.trust == 'disabled' %}

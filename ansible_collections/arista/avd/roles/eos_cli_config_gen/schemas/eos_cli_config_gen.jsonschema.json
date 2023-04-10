@@ -2398,6 +2398,20 @@
                   "sparse_mode": {
                     "type": "boolean",
                     "title": "Sparse Mode"
+                  },
+                  "hello_interval": {
+                    "type": "integer",
+                    "title": "Hello Interval",
+                    "description": "Time between PIM hello packets in seconds",
+                    "minimum": 0,
+                    "maximum": 65535
+                  },
+                  "join_prune_interval": {
+                    "type": "integer",
+                    "title": "Join/Prune Interval",
+                    "description": "PIM join/prune interval in seconds",
+                    "minimum": 0,
+                    "maximum": 18724
                   }
                 },
                 "additionalProperties": false,

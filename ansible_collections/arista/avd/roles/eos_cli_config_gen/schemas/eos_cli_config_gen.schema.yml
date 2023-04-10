@@ -1616,6 +1616,20 @@ keys:
                   max: 429467295
                 sparse_mode:
                   type: bool
+                hello_interval:
+                  type: int
+                  description: Time between PIM hello packets in seconds
+                  convert_types:
+                  - str
+                  min: 0
+                  max: 65535
+                join_prune_interval:
+                  type: int
+                  description: PIM join/prune interval in seconds
+                  convert_types:
+                  - str
+                  min: 0
+                  max: 18724
         mac_security:
           type: dict
           keys:
@@ -5631,6 +5645,18 @@ keys:
                   max: 429467295
                 sparse_mode:
                   type: bool
+                hello_interval:
+                  type: int
+                  convert_types:
+                  - str
+                  min: 0
+                  max: 65535
+                join_prune_interval:
+                  type: int
+                  convert_types:
+                  - str
+                  min: 0
+                  max: 18724
         service_profile:
           type: str
           description: QOS profile
@@ -10585,6 +10611,18 @@ keys:
                   max: 429467295
                 sparse_mode:
                   type: bool
+                hello_interval:
+                  type: int
+                  convert_types:
+                  - str
+                  min: 0
+                  max: 65535
+                join_prune_interval:
+                  type: int
+                  convert_types:
+                  - str
+                  min: 0
+                  max: 18724
                 local_interface:
                   type: str
         isis_enable:
